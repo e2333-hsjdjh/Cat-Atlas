@@ -12,8 +12,12 @@ import CoreImage
 import ImageIO
 import UniformTypeIdentifiers
 
-let srcDir = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-    .appendingPathComponent("images")
+let srcDir: URL = {
+    if CommandLine.arguments.count > 1 {
+        return URL(fileURLWithPath: CommandLine.arguments[1])
+    }
+    return URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("images")
+}()
 let outDir = srcDir.appendingPathComponent("cutouts")
 
 func loadImageOriented(_ url: URL) -> CGImage? {
@@ -58,31 +62,22 @@ func main() throws {
             continue
         }
 
-        for (i, obs) in observations.enumerated() {
-            let instances = obs.instances
-            guard !instances.isEmpty else { continue }
-            for instance in instances {
-                guard let masked = try? obs.generateMaskedImage(ofInstances: [instance], from: cgImage) else {
+        for (_, obs) in observations.enumerated() {
+            // allInstances: 该观察里所有非背景实例的索引集合
+            for idx in obs.allInstances {
+                guard let pixelBuffer = try? obs.generateMaskedImage(
+                    ofInstances: IndexSet(integer: idx), from: handler, croppedToInstancesExtent: true
+                ) else {
                     print("  [!] 生成蒙版失败: \(url.lastPathComponent)")
                     continue
                 }
-                // 归一化 bbox -> 像素坐标（Vision 原点在左下）
-                let w = CGFloat(cgImage.width), h = CGFloat(cgImage.height)
-                let bb = obs.boundingBox
-                var rect = CGRect(x: bb.minX * w,
-                                  y: (1 - bb.maxY) * h,
-                                  width: bb.width * w,
-                                  height: bb.height * h)
-                // 外扩 3% 避免切边
-                rect = rect.insetBy(dx: -rect.width * 0.03, dy: -rect.height * 0.03)
-                rect = rect.intersection(CGRect(x: 0, y: 0, width: w, height: h))
-                guard rect.width > 1, rect.height > 1,
-                      let cropped = masked.cropping(to: rect) else { continue }
+                let ci = CIImage(cvPixelBuffer: pixelBuffer)
+                guard let maskedCG = CIContext().createCGImage(ci, from: ci.extent) else { continue }
 
                 total += 1
                 let name = "\(url.deletingPathExtension().lastPathComponent)__猫\(total).png"
-                try savePNG(cropped, to: outDir.appendingPathComponent(name))
-                print("[ok] \(name)  (\(Int(rect.width))x\(Int(rect.height)))  \(url.lastPathComponent)")
+                try savePNG(maskedCG, to: outDir.appendingPathComponent(name))
+                print("[ok] \(name)  (\(maskedCG.width)x\(maskedCG.height))  \(url.lastPathComponent)")
             }
         }
     }

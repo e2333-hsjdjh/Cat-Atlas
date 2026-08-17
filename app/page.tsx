@@ -1,16 +1,16 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Camera, HeartHandshake, NotebookPen, ShieldCheck, Sparkles } from "lucide-react";
 import { cats, campaigns, timeline } from "@/lib/data";
 import { asset } from "@/lib/path";
 import { CatCard } from "@/components/CatCard";
+import { CatOrbit } from "@/components/CatOrbit";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Timeline } from "@/components/Timeline";
 
 export default function HomePage(){return <>
   <section className="collage-bg overflow-hidden px-4 py-8 sm:px-6 sm:py-12"><div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[.8fr_1.2fr]">
     <div className="relative z-10 py-4"><p className="tape-label w-fit -rotate-2">人人江南爱猫协会 · 2023 图鉴延续计划</p><h1 className="mt-6 font-serif text-5xl font-black leading-[1.02] tracking-[-.05em] text-[#185b2b] sm:text-7xl">猫咪<br/>图鉴</h1><p className="mt-2 text-xl tracking-[.24em] text-[#185b2b]"># miao ～</p><div className="paper-note mt-7 max-w-lg rotate-1"><p className="text-lg font-semibold">每只猫都有名字，<br/>每一次遇见都值得记录。</p><p className="mt-3 text-sm leading-7 text-ink/60">从 2023 年的手作展板出发，把它们的档案、故事和近况继续写下去。</p></div><div className="mt-7 flex flex-wrap gap-3"><Link href="/cats" className="btn-primary">翻开图鉴 <ArrowRight size={17}/></Link><Link href="/upload" className="btn-secondary bg-cream"><Camera size={17}/>上传近况</Link></div></div>
-    <div className="relative min-h-[560px] sm:min-h-[680px]"><Link href="/cats/baga" className="poster-photo absolute left-[2%] top-[2%] h-[44%] w-[54%] -rotate-3"><Image src={asset("/cats/baga.jpg")} fill priority alt="八嘎" className="object-cover"/></Link><Link href="/cats/haidao" className="poster-photo absolute right-[2%] top-[8%] h-[38%] w-[43%] rotate-3"><Image src={asset("/cats/haidao.jpg")} fill priority alt="海盗" className="object-cover"/></Link><Link href="/cats/shatangju" className="poster-photo absolute bottom-[3%] left-[7%] h-[48%] w-[39%] rotate-2"><Image src={asset("/cats/shatangju.jpg")} fill alt="沙糖橘" className="object-cover"/></Link><Link href="/cats/hongtang" className="poster-photo absolute bottom-[5%] right-[3%] h-[44%] w-[49%] -rotate-2"><Image src={asset("/cats/hongtang.jpg")} fill alt="红糖" className="object-cover"/></Link><span className="tape-label absolute left-[39%] top-[42%] z-20 -rotate-2 text-xl">点击认识它们 →</span></div>
+    <div className="relative min-h-[560px] sm:min-h-[680px]"><CatOrbit/><span className="tape-label absolute left-[39%] top-[42%] z-20 -rotate-2 text-xl">点击认识它们 →</span></div>
   </div></section>
   <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24"><SectionHeading eyebrow="2023 CAT DIRECTORY" title="先来认识这些老朋友" href="/cats"/><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{cats.slice(0,6).map(cat=><CatCard key={cat.id} cat={cat}/>)}</div><div className="mt-6 rounded-[1.5rem] border-2 border-dashed border-moss/25 bg-leaf/45 p-7 text-center"><Sparkles className="mx-auto text-moss"/><h3 className="mt-3 text-lg font-semibold">还会有新的猫咪加入</h3><p className="mt-2 text-sm text-ink/55">工作人员可在后台直接新增；普通用户也可以提交临时建档申请。</p><Link href="/upload#new-cat" className="btn-secondary mt-5">发现一只新猫</Link></div></section>
   <section className="bg-leaf/75 py-16 sm:py-24"><div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[.75fr_1.25fr]"><div><p className="eyebrow">ONGOING RECORDS</p><h2 className="mt-2 font-serif text-4xl font-bold text-[#185b2b]">旧图鉴不是终点，<br/>而是时间线的开头。</h2><p className="mt-4 max-w-sm text-sm leading-7 text-ink/60">补充它们现在的状态，也保留领养、失踪和曾经相伴的记录。</p><Link href="/upload" className="btn-primary mt-6"><NotebookPen size={16}/>更新猫咪近况</Link></div><Timeline items={timeline}/></div></section>

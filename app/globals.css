@@ -26,6 +26,16 @@ body { margin: 0; background: #f7f3e9; color: #243028; font-family: ui-sans-seri
 }
 .collage-bg { background-color:#b9dfbf; background-image:radial-gradient(rgba(24,91,43,.13) 1px,transparent 1px),linear-gradient(125deg,rgba(255,255,255,.25),transparent 45%); background-size:5px 5px,100% 100%; }
 
+/* 首页 hero：猫咪围绕中心旋转 + 单只淡入淡出换猫 */
+@keyframes orbit-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes orbit-counter { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+@keyframes cat-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cat-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.orbit-wrap { animation: orbit-spin 50s linear infinite; will-change: transform; }
+.orbit-counter { animation: orbit-counter 50s linear infinite; will-change: transform; }
+.cat-fade-in { animation: cat-fade-in 1.2s ease both; }
+.cat-fade-out { animation: cat-fade-out 1.2s ease both; }
+
 @media (hover: hover) and (pointer: fine) {
   .btn-primary:hover { @apply bg-moss shadow-md; }
   .btn-secondary:hover, .btn-ghost:hover { @apply bg-white text-ink; }
