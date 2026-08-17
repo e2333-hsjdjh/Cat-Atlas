@@ -1,0 +1,18 @@
+[Unit]
+Description=Cat Atlas Next.js frontend
+After=network.target cat-atlas-api.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/www/wwwroot/cat-atlas
+EnvironmentFile=/www/wwwroot/cat-atlas/.env.production
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm start -- -H 127.0.0.1 -p 3180
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

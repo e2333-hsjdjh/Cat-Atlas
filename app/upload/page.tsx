@@ -1,0 +1,4 @@
+import { UploadForm } from "@/components/UploadForm";
+import { CatApplicationForm } from "@/components/CatApplicationForm";
+export const metadata = { title: "发布动态" };
+export default function UploadPage(){return <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-16"><p className="eyebrow">NEW SIGHTING</p><h1 className="mt-2 text-4xl font-semibold tracking-tight">记录一次遇见</h1><p className="mt-3 text-sm leading-6 text-ink/55">照片会被压缩并重新编码，以清除可能包含的精确定位信息。公开页面只显示你填写的大致区域。</p><div className="mt-8"><UploadForm/></div><section id="new-cat" className="scroll-mt-24 pt-16"><p className="eyebrow">NEW CAT</p><h2 className="mt-2 text-2xl font-semibold">图鉴里没有这只猫？</h2><p className="mt-2 text-sm leading-6 text-ink/55">提交临时档案。工作人员会先查重，确认后再转为正式档案。</p><div className="mt-6"><CatApplicationForm/></div></section></div>}

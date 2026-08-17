@@ -1,0 +1,4 @@
+import Image from "next/image";
+import { asset } from "@/lib/path";
+
+export default function ArchivePage(){return <div className="collage-bg min-h-screen px-4 py-10 sm:px-6 sm:py-16"><div className="mx-auto max-w-6xl"><p className="tape-label w-fit -rotate-1">ORIGINAL ARCHIVE</p><h1 className="mt-5 font-serif text-4xl font-black text-[#185b2b] sm:text-6xl">2023 猫咪图鉴原稿</h1><p className="mt-4 max-w-2xl leading-7 text-ink/60">这些手作展板是网站档案的起点。文字按原稿录入；遇到名字、性别或近况不确定的内容，会继续标记为待确认。</p><div className="mt-10 grid items-start gap-6 lg:grid-cols-3">{[1,2,3].map(n=><div className={`relative overflow-hidden rounded-xl border-[10px] border-white bg-white shadow-soft ${n===2?"lg:mt-16":""}`} key={n}><Image src={asset(`/archive/guide-2023-0${n}.jpg`)} width={1280} height={n===3?3456:n===2?2207:2380} alt={`2023 猫咪图鉴原稿第 ${n} 张`} className="h-auto w-full"/></div>)}</div></div></div>}
