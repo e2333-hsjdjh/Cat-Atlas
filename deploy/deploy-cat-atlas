@@ -21,7 +21,7 @@ rm -rf "$release/backend/data" "$release/backend/media"
 ln -sfn "$root/shared/data" "$release/backend/data"
 ln -sfn "$root/shared/media" "$release/backend/media"
 python3 -m venv "$release/backend/.venv"
-"$release/backend/.venv/bin/pip" install --no-index --find-links "$release/backend/wheels" -r "$release/backend/requirements.txt"
+"$release/backend/.venv/bin/pip" install --index-url https://pypi.tuna.tsinghua.edu.cn/simple -r "$release/backend/requirements.txt"
 [[ ! -f $root/shared/data/cat.sqlite3 ]] || cp -a "$root/shared/data/cat.sqlite3" "$root/backups/cat-$release_id.sqlite3"
 set -a
 source /etc/cat-atlas/api.env
