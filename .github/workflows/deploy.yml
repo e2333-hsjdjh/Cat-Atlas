@@ -7,7 +7,7 @@ on:
 
 concurrency:
   group: cat-atlas-production
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -35,12 +35,11 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: python -m pip wheel --wheel-dir backend/wheels -r backend/requirements.txt
-      - run: npm prune --omit=dev
       - name: Package
         run: |
           tar --exclude='backend/data' --exclude='backend/media' --exclude='backend/.venv' \
             -czf cat-atlas-${GITHUB_SHA}.tar.gz \
-            package.json package-lock.json node_modules .next public next.config.ts backend
+            package.json package-lock.json .next public next.config.ts backend
       - name: Configure SSH
         env:
           KEY: ${{ secrets.DEPLOY_SSH_KEY }}

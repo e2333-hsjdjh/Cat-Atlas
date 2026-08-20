@@ -12,6 +12,8 @@ install -d -o cat-atlas -g cat-atlas "$root/releases" "$root/shared/data" "$root
 rm -rf "$release"
 install -d -o cat-atlas -g cat-atlas "$release"
 tar -xzf "$archive" -C "$release"
+chown -R cat-atlas:cat-atlas "$release"
+runuser -u cat-atlas -- npm ci --omit=dev --registry=https://registry.npmmirror.com --no-audit --no-fund --prefix "$release"
 rm -rf "$release/backend/data" "$release/backend/media"
 ln -sfn "$root/shared/data" "$release/backend/data"
 ln -sfn "$root/shared/media" "$release/backend/media"
