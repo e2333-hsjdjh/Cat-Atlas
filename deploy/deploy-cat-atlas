@@ -12,6 +12,7 @@ install -d -o cat-atlas -g cat-atlas "$root/releases" "$root/shared/data" "$root
 rm -rf "$release"
 install -d -o cat-atlas -g cat-atlas "$release"
 tar -xzf "$archive" -C "$release"
+rm -rf "$release/backend/data" "$release/backend/media"
 ln -sfn "$root/shared/data" "$release/backend/data"
 ln -sfn "$root/shared/media" "$release/backend/media"
 python3 -m venv "$release/backend/.venv"
