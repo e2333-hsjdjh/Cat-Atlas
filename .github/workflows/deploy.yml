@@ -38,6 +38,7 @@ jobs:
       - name: Package
         run: |
           tar --exclude='backend/data' --exclude='backend/media' --exclude='backend/.venv' \
+            --exclude='.next/cache' --exclude='.next/dev' \
             -czf cat-atlas-${GITHUB_SHA}.tar.gz \
             package.json package-lock.json .next public next.config.ts backend
       - name: Configure SSH

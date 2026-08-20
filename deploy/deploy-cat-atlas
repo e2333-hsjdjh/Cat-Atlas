@@ -5,7 +5,10 @@ release_id=${2:?release id required}
 root=/srv/cat-atlas
 release="$root/releases/$release_id"
 current="$root/current"
-previous=$(readlink -f "$current" 2>/dev/null || true)
+previous=
+if [[ -L $current ]]; then
+  previous=$(readlink -f "$current" 2>/dev/null || true)
+fi
 [[ $release_id =~ ^[0-9a-f]{40}$ ]] || exit 2
 tar -tzf "$archive" | awk '/^\// || /(^|\/)\.\.($|\/)/ {bad=1} END {exit bad}'
 install -d -o cat-atlas -g cat-atlas "$root/releases" "$root/shared/data" "$root/shared/media" "$root/backups"
@@ -30,8 +33,8 @@ ln -sfn "$release" "$current.new"
 mv -Tf "$current.new" "$current"
 systemctl restart cat-atlas-api.service cat-atlas-web.service
 ok=true
-curl -fsS --max-time 15 http://127.0.0.1:3181/api/health/ >/dev/null || ok=false
-curl -fsS --max-time 15 http://127.0.0.1:3180/cat/ >/dev/null || ok=false
+curl -fsS --retry 15 --retry-connrefused --retry-delay 1 --max-time 3 http://127.0.0.1:3181/api/health/ >/dev/null || ok=false
+curl -fsS --retry 15 --retry-connrefused --retry-delay 1 --max-time 3 http://127.0.0.1:3180/cat/ >/dev/null || ok=false
 if [[ $ok != true ]]; then
   if [[ -n $previous && -d $previous ]]; then
     ln -sfn "$previous" "$current.new"
