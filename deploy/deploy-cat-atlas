@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+archive=${1:?archive required}
+release_id=${2:?release id required}
+root=/srv/cat-atlas
+release="$root/releases/$release_id"
+current="$root/current"
+previous=$(readlink -f "$current" 2>/dev/null || true)
+[[ $release_id =~ ^[0-9a-f]{40}$ ]] || exit 2
+tar -tzf "$archive" | awk '/^\// || /(^|\/)\.\.($|\/)/ {bad=1} END {exit bad}'
+install -d -o cat-atlas -g cat-atlas "$root/releases" "$root/shared/data" "$root/shared/media" "$root/backups"
+rm -rf "$release"
+install -d -o cat-atlas -g cat-atlas "$release"
+tar -xzf "$archive" -C "$release"
+ln -sfn "$root/shared/data" "$release/backend/data"
+ln -sfn "$root/shared/media" "$release/backend/media"
+python3 -m venv "$release/backend/.venv"
+"$release/backend/.venv/bin/pip" install --no-index --find-links "$release/backend/wheels" -r "$release/backend/requirements.txt"
+[[ ! -f $root/shared/data/cat.sqlite3 ]] || cp -a "$root/shared/data/cat.sqlite3" "$root/backups/cat-$release_id.sqlite3"
+set -a
+source /etc/cat-atlas/api.env
+set +a
+"$release/backend/.venv/bin/python" "$release/backend/manage.py" migrate --noinput
+"$release/backend/.venv/bin/python" "$release/backend/manage.py" collectstatic --noinput
+chown -R cat-atlas:cat-atlas "$release" "$root/shared"
+ln -sfn "$release" "$current.new"
+mv -Tf "$current.new" "$current"
+systemctl restart cat-atlas-api.service cat-atlas-web.service
+ok=true
+curl -fsS --max-time 15 http://127.0.0.1:3181/api/health/ >/dev/null || ok=false
+curl -fsS --max-time 15 http://127.0.0.1:3180/cat/ >/dev/null || ok=false
+if [[ $ok != true ]]; then
+  if [[ -n $previous && -d $previous ]]; then
+    ln -sfn "$previous" "$current.new"
+    mv -Tf "$current.new" "$current"
+    systemctl restart cat-atlas-api.service cat-atlas-web.service
+  fi
+  echo "health check failed; rolled back" >&2
+  exit 1
+fi
+rm -f "$archive"
