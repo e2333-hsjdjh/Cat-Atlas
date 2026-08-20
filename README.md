@@ -28,7 +28,28 @@ npm run dev
 
 - 网站：<https://20250821cdcdifc.top/cat/>
 - 工作人员后台：<https://20250821cdcdifc.top/cat/admin/>
-- 后台账号凭据保存在服务器 `/root/cat-admin-credentials.txt`（权限 `600`）。
+- API 健康检查：<https://20250821cdcdifc.top/cat/api/health/>
+
+## 生产部署
+
+生产环境运行于腾讯云 Ubuntu Server 24.04 LTS：
+
+- Next.js 前端：`cat-atlas-web.service`，监听 `127.0.0.1:3180`
+- Django API：`cat-atlas-api.service`，监听 `127.0.0.1:3181`
+- 发布目录：`/srv/cat-atlas/releases/<commit-sha>`
+- 当前版本：`/srv/cat-atlas/current`
+- 持久数据：`/srv/cat-atlas/shared/data` 与 `/srv/cat-atlas/shared/media`
+- 服务配置：`/etc/cat-atlas/api.env` 与 `/etc/cat-atlas/web.env`
+
+推送到 `master` 后，[GitHub Actions](.github/workflows/deploy.yml) 会执行类型检查、
+测试和 Next.js 构建。发布包排除 `.next/cache`、SQLite 和媒体目录；服务器通过
+npmmirror 安装 Node.js 依赖、通过清华 PyPI 镜像创建 Python 虚拟环境，然后执行
+Django migration、collectstatic、原子切换和双端健康检查。发布失败会恢复上一版本，
+SQLite 会在迁移前备份。
+
+仓库需要配置 `DEPLOY_HOST`、`DEPLOY_USER`、`DEPLOY_SSH_KEY` 和
+`DEPLOY_HOST_KEY` 四项 Actions Secrets。部署用户只可调用固定的
+`/usr/local/sbin/deploy-cat-atlas`，密钥、后台凭据和生产环境文件不得提交到 Git。
 
 ## 验证
 
