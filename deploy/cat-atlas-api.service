@@ -4,10 +4,11 @@ After=network.target
 
 [Service]
 Type=simple
-User=root
-WorkingDirectory=/www/wwwroot/cat-atlas/backend
-EnvironmentFile=/www/wwwroot/cat-atlas/backend/.env
-ExecStart=/www/wwwroot/cat-atlas/backend/.venv/bin/gunicorn --workers 2 --bind 127.0.0.1:3181 --timeout 60 cat_backend.wsgi:application
+User=cat-atlas
+Group=cat-atlas
+WorkingDirectory=/srv/cat-atlas/current/backend
+EnvironmentFile=/etc/cat-atlas/api.env
+ExecStart=/srv/cat-atlas/current/backend/.venv/bin/gunicorn --workers 2 --bind 127.0.0.1:3181 --timeout 60 cat_backend.wsgi:application
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true

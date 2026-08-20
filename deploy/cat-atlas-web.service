@@ -4,9 +4,10 @@ After=network.target cat-atlas-api.service
 
 [Service]
 Type=simple
-User=root
-WorkingDirectory=/www/wwwroot/cat-atlas
-EnvironmentFile=/www/wwwroot/cat-atlas/.env.production
+User=cat-atlas
+Group=cat-atlas
+WorkingDirectory=/srv/cat-atlas/current
+EnvironmentFile=/etc/cat-atlas/web.env
 Environment=NODE_ENV=production
 ExecStart=/usr/bin/npm start -- -H 127.0.0.1 -p 3180
 Restart=on-failure
